@@ -1,0 +1,90 @@
+// SQLite for local development. To use Postgres in production, change the
+// provider to "postgresql" and point DATABASE_URL at your database.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  // PARTICIPANT | ORGANIZER | ADMIN
+  role         String   @default("PARTICIPANT")
+  // Organizer profile, shown on event pages and /organizers/[id]
+  orgName      String?
+  bio          String?
+  website      String?
+  createdAt    DateTime @default(now())
+
+  events        Event[]
+  registrations Registration[]
+}
+
+model Event {
+  id                   String   @id @default(cuid())
+  slug                 String   @unique
+  title                String
+  tagline              String?
+  description          String
+  // WORKSHOP | WEBINAR | CONFERENCE | CONCLAVE
+  type                 String
+  // ONLINE | OFFLINE | HYBRID
+  mode                 String
+  // Comma-separated topic keys, e.g. "anxiety,stress"
+  topics               String   @default("")
+  startsAt             DateTime
+  endsAt               DateTime
+  registrationDeadline DateTime
+  venue                String?
+  city                 String?
+  // Shown only to registered participants
+  meetingLink          String?
+  // null = unlimited seats
+  capacity             Int?
+  // In rupees; 0 = free. Collected by the organizer for now (no online checkout).
+  price                Int      @default(0)
+  bannerUrl            String?
+  // JSON: [{ name, role, bio, photoUrl }]
+  speakers             String   @default("[]")
+  // JSON: [{ time, title }]
+  agenda               String   @default("[]")
+  // DRAFT | PUBLISHED | CANCELLED
+  status               String   @default("DRAFT")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  organizerId   String
+  organizer     User           @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+
+  @@index([status, startsAt])
+  @@index([organizerId])
+}
+
+model Registration {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String
+  organization String?
+  note         String?
+  // REGISTERED | CANCELLED
+  status       String   @default("REGISTERED")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
+}

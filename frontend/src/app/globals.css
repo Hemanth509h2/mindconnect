@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: #faf7f2;
+  --color-beige: #f3eee8;
+  --color-line: #e6dfd5;
+  --color-ink: #2d2d2d;
+  --color-muted: #6b7280;
+  --color-teal: #00897b;
+  --color-teal-dark: #00695c;
+  --color-teal-mist: #e3f1ee;
+  --color-lavender: #b8a9d9;
+  --color-lavender-deep: #7a68ad;
+  --color-lavender-mist: #ece7f5;
+  --color-sage-mist: #e7ebe4;
+  --color-gold-mist: #f4ebdc;
+  --color-rose: #b4475a;
+  --color-rose-mist: #f8e8eb;
+  --color-navy: #1c1d2f;
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(45 45 45 / 0.04), 0 12px 32px -14px rgb(122 104 173 / 0.22);
+  --shadow-lift: 0 2px 4px rgb(45 45 45 / 0.05), 0 24px 48px -18px rgb(122 104 173 / 0.32);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    background: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+  summary {
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+@utility card {
+  @apply rounded-2xl border border-line bg-white shadow-soft;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-teal text-white hover:bg-teal-dark;
+}
+@utility btn-secondary {
+  @apply btn border border-line bg-white text-ink hover:border-teal hover:text-teal;
+}
+@utility btn-ghost {
+  @apply btn text-ink hover:bg-beige;
+}
+@utility btn-danger {
+  @apply btn border border-rose/30 bg-white text-rose hover:bg-rose-mist;
+}
+@utility btn-sm {
+  @apply px-3.5 py-1.5 text-xs;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-ink;
+}
+@utility hint {
+  @apply mt-1 text-xs text-muted;
+}
+@utility input {
+  @apply w-full rounded-xl border border-line bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition placeholder:text-muted/70 focus:border-teal focus:ring-4 focus:ring-teal/10;
+}
+@utility chip {
+  @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium;
+}
+@utility alert-error {
+  @apply rounded-xl border border-rose/20 bg-rose-mist px-4 py-3 text-sm text-rose;
+}
+@utility alert-success {
+  @apply rounded-xl border border-teal/20 bg-teal-mist px-4 py-3 text-sm text-teal-dark;
+}

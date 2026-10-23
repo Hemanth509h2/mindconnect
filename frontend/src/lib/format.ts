@@ -8,6 +8,8 @@ const toDate = (d: DateLike) => (typeof d === "string" ? new Date(d) : d);
 const dateFmt = new Intl.DateTimeFormat("en-IN", { timeZone: tz, day: "numeric", month: "short", year: "numeric" });
 const dayFmt = new Intl.DateTimeFormat("en-IN", { timeZone: tz, weekday: "short", day: "numeric", month: "short", year: "numeric" });
 const timeFmt = new Intl.DateTimeFormat("en-IN", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true });
+const dayNumFmt = new Intl.DateTimeFormat("en-IN", { timeZone: tz, day: "numeric" });
+const monthFmt = new Intl.DateTimeFormat("en-IN", { timeZone: tz, month: "short" });
 const inputFmt = new Intl.DateTimeFormat("en-CA", {
   timeZone: tz,
   year: "numeric",
@@ -29,6 +31,12 @@ export function formatTime(d: DateLike) {
 export function formatDateTime(value: DateLike) {
   const d = toDate(value);
   return `${dayFmt.format(d)}, ${timeFmt.format(d)}`;
+}
+
+/** { day: "28", month: "Oct" }, for calendar-style date tiles. */
+export function dateTile(d: DateLike) {
+  const date = toDate(d);
+  return { day: dayNumFmt.format(date), month: monthFmt.format(date) };
 }
 
 /** "Wed, 28 Oct 2026 · 9:30 am – 1:00 pm", or "28 Oct 2026 – 30 Oct 2026" for multi-day events. */

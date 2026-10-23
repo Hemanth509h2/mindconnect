@@ -10,6 +10,14 @@ const steps = [
   { title: "Manage registrations", text: "See who's coming in real time and download the attendee list as a spreadsheet." },
 ];
 
+const features = [
+  { title: "Free listing", text: "No fees to publish. Charge your own entry fee, or keep it free." },
+  { title: "Seat limits & deadlines", text: "Registration closes on its own when seats fill up or the deadline passes." },
+  { title: "Private meeting links", text: "Online links are shown only to people who have registered." },
+  { title: "Attendee list as CSV", text: "Download names, emails and phone numbers whenever you need them." },
+  { title: "Your own organizer page", text: "One link that shows everything you're running, past and upcoming." },
+];
+
 export default async function HostPage() {
   const user = await getCurrentUser();
   const cta = isOrganizer(user)
@@ -20,18 +28,42 @@ export default async function HostPage() {
 
   return (
     <div className="container-page py-16">
-      <div className="max-w-3xl">
-        <p className="chip bg-lavender-mist text-lavender-deep">For therapists, colleges, NGOs and wellness teams</p>
-        <h1 className="mt-5 text-4xl leading-tight font-semibold sm:text-5xl">
-          Bring your mental health event to the people who need it.
-        </h1>
-        <p className="mt-5 text-lg text-muted">
-          Workshops, webinars, conferences and conclaves — list them on MindConnect for free and handle registrations in
-          one place.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link href={cta.href} className="btn-primary">{cta.label}</Link>
-          <Link href="/events" className="btn-secondary">Browse live events</Link>
+      <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_1fr] [&>*]:min-w-0">
+        <div>
+          <p className="chip bg-lavender-mist text-lavender-deep">For therapists, colleges, NGOs and wellness teams</p>
+          <h1 className="mt-5 text-4xl leading-tight font-semibold sm:text-5xl">
+            Bring your mental health event to the people who need it.
+          </h1>
+          <p className="mt-5 text-lg text-muted">
+            Workshops, webinars, conferences and conclaves — list them on MindConnect for free and handle registrations
+            in one place.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href={cta.href} className="btn-primary">{cta.label}</Link>
+            <Link href="/events" className="btn-secondary">Browse live events</Link>
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="pointer-events-none absolute -inset-4 -rotate-2 rounded-[2rem] bg-gradient-to-br from-lavender-mist via-teal-mist to-gold-mist" />
+          <div className="card relative p-6 shadow-lift">
+            <h2 className="text-xl font-semibold">What you get</h2>
+            <ul className="mt-5 space-y-4">
+              {features.map((f) => (
+                <li key={f.title} className="flex gap-3">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-teal-mist text-teal-dark" aria-hidden>
+                    <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M5 10.5l3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span>
+                    <span className="block font-semibold">{f.title}</span>
+                    <span className="block text-sm text-muted">{f.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 

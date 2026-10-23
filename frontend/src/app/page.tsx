@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
-import type { EventPage } from "@/lib/types";
-import { EVENT_TYPES, TOPICS } from "@/lib/constants";
+import type { EventPage, EventSummary } from "@/lib/types";
+import { EVENT_TYPES, TOPICS, labelOf } from "@/lib/constants";
+import { dateTile, formatPrice } from "@/lib/format";
 import { EventCard } from "@/components/EventCard";
 
 export const dynamic = "force-dynamic";
@@ -18,31 +19,35 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -top-32 -right-24 h-96 w-96 rounded-full bg-lavender/30 blur-3xl" />
         <div className="pointer-events-none absolute top-40 -left-24 h-80 w-80 rounded-full bg-teal/15 blur-3xl" />
-        <div className="container-page relative py-16 sm:py-24">
-          <p className="chip bg-teal-mist text-teal-dark">Workshops · Webinars · Conferences · Conclaves</p>
-          <h1 className="mt-5 max-w-3xl text-4xl leading-tight font-semibold sm:text-6xl">
-            Find the mental health events that <span className="text-teal">move you forward</span>.
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-muted">
-            Learn from therapists, researchers and people with lived experience. Register in a click — or list your own
-            event and reach people who care.
-          </p>
-          <form action="/events" className="mt-8 flex max-w-xl flex-col gap-2 sm:flex-row">
-            <input name="q" className="input flex-1 py-3" placeholder="Search anxiety, mindfulness, workplace wellbeing…" />
-            <button className="btn-primary py-3">Search events</button>
-          </form>
-          <dl className="mt-12 grid max-w-xl grid-cols-3 gap-6">
-            {[
-              { value: stats.events, label: "Events listed" },
-              { value: stats.organizers, label: "Organizers" },
-              { value: stats.registrations, label: "Registrations" },
-            ].map((s) => (
-              <div key={s.label}>
-                <dt className="text-sm text-muted">{s.label}</dt>
-                <dd className="font-display text-3xl font-semibold">{s.value}</dd>
-              </div>
-            ))}
-          </dl>
+        <div className="container-page relative grid items-center gap-12 pt-16 pb-16 sm:pt-20 lg:grid-cols-[1.1fr_1fr] [&>*]:min-w-0">
+          <div>
+            <p className="chip bg-teal-mist text-teal-dark">Workshops · Webinars · Conferences · Conclaves</p>
+            <h1 className="mt-5 text-4xl leading-tight font-semibold sm:text-6xl lg:text-[3.4rem]">
+              Find the mental health events that <span className="text-teal">move you forward</span>.
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg text-muted">
+              Learn from therapists, researchers and people with lived experience. Register in a click — or list your own
+              event and reach people who care.
+            </p>
+            <form action="/events" className="mt-8 flex max-w-xl flex-col gap-2 sm:flex-row">
+              <input name="q" className="input flex-1 py-3" placeholder="Search anxiety, mindfulness, workplace wellbeing…" />
+              <button className="btn-primary py-3">Search events</button>
+            </form>
+            <dl className="mt-12 grid max-w-xl grid-cols-3 gap-6">
+              {[
+                { value: stats.events, label: "Events listed" },
+                { value: stats.organizers, label: "Organizers" },
+                { value: stats.registrations, label: "Registrations" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <dt className="text-sm text-muted">{s.label}</dt>
+                  <dd className="font-display text-3xl font-semibold">{s.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <ComingUp events={upcoming.slice(0, 4)} />
         </div>
       </section>
 
@@ -124,5 +129,61 @@ export default async function HomePage() {
         </div>
       </section>
     </>
+  );
+}
+
+/** The hero's right-hand panel: the next few events, or a note when there are none. */
+function ComingUp({ events }: { events: EventSummary[] }) {
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute -inset-4 rotate-2 rounded-[2rem] bg-gradient-to-br from-teal-mist via-lavender-mist to-gold-mist" />
+      <div className="card relative p-6 shadow-lift">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold">Coming up next</h2>
+          <span className="chip bg-teal-mist text-teal-dark">
+            <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-teal" />
+            Registrations open
+          </span>
+        </div>
+
+        {events.length > 0 ? (
+          <ul className="mt-5 divide-y divide-line">
+            {events.map((e) => {
+              const { day, month } = dateTile(e.startsAt);
+              return (
+                <li key={e.slug}>
+                  <Link href={`/events/${e.slug}`} className="group flex items-center gap-4 py-3.5">
+                    <span className="grid h-14 w-14 shrink-0 place-content-center rounded-xl bg-lavender-mist text-center text-lavender-deep">
+                      <span className="font-display text-xl leading-none font-semibold">{day}</span>
+                      <span className="mt-1 text-[11px] font-semibold tracking-wide uppercase">{month}</span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold group-hover:text-teal">{e.title}</span>
+                      <span className="mt-0.5 block truncate text-sm text-muted">
+                        {labelOf(EVENT_TYPES, e.type)} · {e.mode === "ONLINE" ? "Online" : e.city} · {formatPrice(e.price)}
+                      </span>
+                    </span>
+                    <span className="text-muted transition group-hover:translate-x-0.5 group-hover:text-teal" aria-hidden>
+                      →
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="mt-5 rounded-xl bg-beige p-5 text-sm text-muted">
+            Nothing scheduled yet — new events appear here as soon as organizers publish them.
+          </p>
+        )}
+
+        <div className="mt-4 flex items-center justify-between gap-4 rounded-xl bg-ivory px-4 py-3 text-sm">
+          <span className="text-muted">Hosting something?</span>
+          <Link href="/host" className="font-semibold text-teal hover:text-teal-dark">
+            List it for free →
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }

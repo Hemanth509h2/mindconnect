@@ -21,16 +21,38 @@ export default async function OrganizerProfilePage({ params }: { params: Promise
 
   return (
     <div className="container-page py-12">
-      <div className="card p-8">
-        <p className="text-sm text-muted">Organizer</p>
-        <h1 className="mt-1 text-4xl font-semibold">{organizer.orgName ?? organizer.name}</h1>
-        {organizer.orgName && <p className="mt-1 text-muted">{organizer.name}</p>}
-        {organizer.bio && <p className="mt-4 max-w-3xl whitespace-pre-line">{organizer.bio}</p>}
-        {organizer.website && (
-          <a href={organizer.website} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-semibold text-teal">
-            Visit website ↗
-          </a>
-        )}
+      <div className="card relative overflow-hidden p-8">
+        <div className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-lavender/25 blur-3xl" />
+        <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="flex gap-5">
+            <span className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-teal-mist font-display text-2xl font-semibold text-teal-dark">
+              {(organizer.orgName ?? organizer.name).charAt(0).toUpperCase()}
+            </span>
+            <div>
+              <p className="text-sm text-muted">Organizer</p>
+              <h1 className="mt-1 text-4xl font-semibold">{organizer.orgName ?? organizer.name}</h1>
+              {organizer.orgName && <p className="mt-1 text-muted">{organizer.name}</p>}
+              {organizer.bio && <p className="mt-4 max-w-2xl whitespace-pre-line">{organizer.bio}</p>}
+              {organizer.website && (
+                <a href={organizer.website} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-semibold text-teal">
+                  Visit website ↗
+                </a>
+              )}
+            </div>
+          </div>
+          <dl className="grid grid-cols-3 gap-3 lg:w-80">
+            {[
+              { value: upcoming.length, label: "Upcoming" },
+              { value: past.length, label: "Past events" },
+              { value: organizer.events.reduce((sum, e) => sum + e.registeredCount, 0), label: "Registrations" },
+            ].map((s) => (
+              <div key={s.label} className="flex flex-col-reverse rounded-xl bg-ivory p-4 text-center">
+                <dt className="mt-1 text-xs text-muted">{s.label}</dt>
+                <dd className="font-display text-3xl font-semibold">{s.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
       {[
         { title: "Upcoming events", list: upcoming },

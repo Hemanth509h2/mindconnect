@@ -5,3 +5,4 @@ next-env.d.ts
 .env
 prisma/*.db
 prisma/*.db-journal
+.vercel

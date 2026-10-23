@@ -95,13 +95,25 @@ All responses are JSON; errors are `{ "error": "message" }`.
 | PATCH | `/api/organizer/events/:id/status` | organizer | `{ status: DRAFT \| PUBLISHED \| CANCELLED }` |
 | GET | `/api/organizer/events/:id/registrations` | organizer | Registrants; `?format=csv` downloads them |
 
-## Going to production
+## Deploy to Vercel
 
-- **Database:** in `backend/prisma/schema.prisma` change the provider to
-  `postgresql`, point `DATABASE_URL` at it and run `npm run db:push`.
-- **Backend env:** `AUTH_SECRET` (long random string), `ALLOWED_ORIGINS`.
-- **Frontend env:** `API_URL` (the backend's URL as the frontend server sees it).
-- Serve over HTTPS — the session cookie is `Secure` in production.
+Create **two Vercel projects** from this repo, one per folder (Project
+Settings → Root Directory: `backend` for one, `frontend` for the other). Each
+folder's `vercel.json` sets the build and runs functions in Mumbai (`bom1`).
+
+1. **Database first.** SQLite can't run on Vercel (there's no persistent
+   disk), so the backend needs Postgres — e.g. Neon from the Vercel
+   Marketplace, in the Mumbai region. In `backend/prisma/schema.prisma` change
+   the provider to `postgresql`, then run `npm run db:push` with the new
+   `DATABASE_URL`.
+2. **Backend project** env vars: `DATABASE_URL`, `AUTH_SECRET`
+   (`openssl rand -base64 32`), `ALLOWED_ORIGINS` (the frontend's URL).
+3. **Frontend project** env var: `API_URL` — the backend's production
+   domain, e.g. `https://mindconnect-backend.vercel.app`. Use the production
+   domain rather than a deployment URL: Vercel's Deployment Protection can
+   put deployment and preview URLs behind a Vercel login.
+
+Deploy the backend first so its URL exists when you set `API_URL`.
 
 ## Not built yet
 

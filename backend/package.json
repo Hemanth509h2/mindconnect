@@ -8,7 +8,6 @@
     "start": "next start -p 4200",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:push:prod": "node --env-file=.env prisma/push-production.mjs",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"
   },

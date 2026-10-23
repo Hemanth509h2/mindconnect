@@ -1,7 +1,4 @@
-// Neon Postgres, in STAAD's app database. MindConnect keeps to its own schemas,
-// picked by the `schema=` parameter in DATABASE_URL — `mindconnect` (production)
-// and `mindconnect_dev` (local) — and connects as the `mindconnect` role, which
-// can't see STAAD's tables. Setup: prisma/neon-setup.sql.
+// Neon Postgres: one database, used locally and by the live site.
 generator client {
   provider = "prisma-client-js"
 }

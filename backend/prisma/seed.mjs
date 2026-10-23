@@ -1,7 +1,15 @@
 // Demo data for local development: `npm run db:seed`.
-// Wipes existing events, registrations and users first.
+// Wipes existing events, registrations and users first, so it only runs
+// against a schema whose name ends in `_dev` (or a database on this machine).
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
+const target = new URL(process.env.DATABASE_URL);
+const schema = target.searchParams.get("schema") ?? "public";
+if (!schema.endsWith("_dev") && !["localhost", "127.0.0.1"].includes(target.hostname)) {
+  console.error(`Refusing to seed schema "${schema}" on ${target.hostname}: the seed deletes all data. Use a *_dev schema.`);
+  process.exit(1);
+}
 
 const prisma = new PrismaClient();
 const DAY = 86_400_000;

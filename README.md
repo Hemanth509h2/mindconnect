@@ -27,9 +27,9 @@ Ports are 3200/4200 so MindConnect can run next to the STAAD platform
 ```bash
 # 1. Backend (API at http://localhost:4200)
 cd backend
-cp .env.example .env        # set AUTH_SECRET: openssl rand -base64 32
+cp .env.example .env        # database password + AUTH_SECRET (openssl rand -base64 32)
 npm install
-npm run db:push             # creates prisma/dev.db (SQLite)
+npm run db:push             # creates MindConnect's tables in the mindconnect_dev schema
 npm run db:seed             # optional: demo organizers, events, a registration
 npm run dev
 
@@ -48,7 +48,8 @@ Demo accounts after seeding (password `demo1234`):
 | `staad@demo.in`       | Organizer — STAAD (PSYVERSE 2026)     |
 | `participant@demo.in` | Participant |
 
-`npm run db:seed` wipes all users, events and registrations first.
+`npm run db:seed` wipes all users, events and registrations first, so it
+refuses to run against any schema not ending in `_dev`.
 
 ## How auth works
 
@@ -57,6 +58,20 @@ The frontend's server actions keep it in an httpOnly cookie (`mc_session`)
 and send it to the backend as `Authorization: Bearer <token>`. The browser
 never calls the backend directly, so the token is never exposed to page
 scripts and the frontend only needs `API_URL` on its server.
+
+## Database
+
+MindConnect uses the Neon Postgres database that holds STAAD's app data
+(`ep-bold-butterfly…`, database `neondb`, Singapore), kept apart from STAAD:
+
+- **Own schemas:** `mindconnect` (production) and `mindconnect_dev` (local).
+  The `schema=` parameter in `DATABASE_URL` picks one.
+- **Own login role:** `mindconnect` can only use those schemas, so it can't
+  read or change STAAD's tables in `public`.
+
+The role and schemas are created once with `backend/prisma/neon-setup.sql`
+(Neon SQL Editor, as `neondb_owner`). MindConnect shares Neon's compute with
+STAAD.
 
 ## Features
 
@@ -99,15 +114,14 @@ All responses are JSON; errors are `{ "error": "message" }`.
 
 Create **two Vercel projects** from this repo, one per folder (Project
 Settings → Root Directory: `backend` for one, `frontend` for the other). Each
-folder's `vercel.json` sets the build and runs functions in Mumbai (`bom1`).
+folder's `vercel.json` sets the build and runs functions in Singapore
+(`sin1`), next to the database.
 
-1. **Database first.** SQLite can't run on Vercel (there's no persistent
-   disk), so the backend needs Postgres — e.g. Neon from the Vercel
-   Marketplace, in the Mumbai region. In `backend/prisma/schema.prisma` change
-   the provider to `postgresql`, then run `npm run db:push` with the new
-   `DATABASE_URL`.
-2. **Backend project** env vars: `DATABASE_URL`, `AUTH_SECRET`
-   (`openssl rand -base64 32`), `ALLOWED_ORIGINS` (the frontend's URL).
+1. **Production tables:** `cd backend && npm run db:push:prod` — and again
+   whenever `schema.prisma` changes.
+2. **Backend project** env vars: `DATABASE_URL` (the `PRODUCTION_DATABASE_URL`
+   value from `backend/.env`), `AUTH_SECRET` (a new one:
+   `openssl rand -base64 32`), `ALLOWED_ORIGINS` (the frontend's URL).
 3. **Frontend project** env var: `API_URL` — the backend's production
    domain, e.g. `https://mindconnect-backend.vercel.app`. Use the production
    domain rather than a deployment URL: Vercel's Deployment Protection can

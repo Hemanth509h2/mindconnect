@@ -25,10 +25,10 @@ export async function GET(request: Request) {
     endsAt: past ? { lt: now } : { gte: now },
     ...(q && {
       OR: [
-        { title: { contains: q } },
-        { tagline: { contains: q } },
-        { description: { contains: q } },
-        { city: { contains: q } },
+        { title: { contains: q, mode: "insensitive" } },
+        { tagline: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+        { city: { contains: q, mode: "insensitive" } },
       ],
     }),
     ...(type && { type }),

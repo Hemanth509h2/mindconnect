@@ -1,11 +1,13 @@
-// SQLite for local development. To use Postgres in production, change the
-// provider to "postgresql" and point DATABASE_URL at your database.
+// Neon Postgres, in STAAD's app database. MindConnect keeps to its own schemas,
+// picked by the `schema=` parameter in DATABASE_URL — `mindconnect` (production)
+// and `mindconnect_dev` (local) — and connects as the `mindconnect` role, which
+// can't see STAAD's tables. Setup: prisma/neon-setup.sql.
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

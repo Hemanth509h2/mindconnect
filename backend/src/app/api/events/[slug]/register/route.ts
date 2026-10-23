@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
@@ -37,27 +38,37 @@ export async function POST(request: Request, { params }: { params: Promise<{ slu
     organization: v.organization || null,
     note: v.note || null,
   };
+  // Count seats and register in one serializable transaction so two people
+  // can't both take the last seat. When requests race, Postgres aborts one of
+  // them (P2034, or P2002 for a double-submit); the retry then sees the winner.
   let registration;
-  try {
-    // Count seats and register in one transaction so two people can't take the last seat.
-    registration = await prisma.$transaction(async (tx) => {
-      const where = { eventId_userId: { eventId: event.id, userId: user.id } };
-      const existing = await tx.registration.findUnique({ where });
-      if (existing?.status === "REGISTERED") throw new RegistrationRefused("You're already registered for this event");
-      if (event.capacity !== null) {
-        const taken = await tx.registration.count({ where: { eventId: event.id, status: "REGISTERED" } });
-        if (taken >= event.capacity) throw new RegistrationRefused("Sorry, this event is full");
-      }
-      return tx.registration.upsert({
-        where,
-        create: { ...details, eventId: event.id, userId: user.id },
-        update: { ...details, status: "REGISTERED" },
-        select: { id: true, status: true, createdAt: true },
-      });
-    });
-  } catch (err) {
-    if (err instanceof RegistrationRefused) return fail(err.message, 409);
-    throw err;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      registration = await prisma.$transaction(
+        async (tx) => {
+          const where = { eventId_userId: { eventId: event.id, userId: user.id } };
+          const existing = await tx.registration.findUnique({ where });
+          if (existing?.status === "REGISTERED") throw new RegistrationRefused("You're already registered for this event");
+          if (event.capacity !== null) {
+            const taken = await tx.registration.count({ where: { eventId: event.id, status: "REGISTERED" } });
+            if (taken >= event.capacity) throw new RegistrationRefused("Sorry, this event is full");
+          }
+          return tx.registration.upsert({
+            where,
+            create: { ...details, eventId: event.id, userId: user.id },
+            update: { ...details, status: "REGISTERED" },
+            select: { id: true, status: true, createdAt: true },
+          });
+        },
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
+      break;
+    } catch (err) {
+      if (err instanceof RegistrationRefused) return fail(err.message, 409);
+      const raced = err instanceof Prisma.PrismaClientKnownRequestError && (err.code === "P2034" || err.code === "P2002");
+      if (raced && attempt < 3) continue;
+      throw err;
+    }
   }
 
   // Remember the phone number for next time.

@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
  * server actions call `api()`, which forwards the user's session token as
  * `Authorization: Bearer <token>`.
  */
-export const API_URL = (process.env.API_URL || "http://localhost:4200").replace(/\/+$/, "");
+export const API_URL = process.env.API_URL ?? "http://localhost:4200";
 
 export const SESSION_COOKIE = "mc_session";
 

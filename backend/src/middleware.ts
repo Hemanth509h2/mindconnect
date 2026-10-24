@@ -16,7 +16,7 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
-// Comma-separated, e.g. "https://mindconnect.in,http://localhost:3200".
+// Comma-separated, e.g. "https://psytrexa.in,http://localhost:3200".
 const ALLOWED_ORIGINS = new Set(
   (process.env.ALLOWED_ORIGINS ?? "")
     .split(",")

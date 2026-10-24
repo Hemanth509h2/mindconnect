@@ -6,7 +6,7 @@ export const metadata = { title: "Host an event" };
 const steps = [
   { title: "Create your organizer account", text: "Sign up as an organizer with your organisation or practice name." },
   { title: "Describe your event", text: "Add the date, venue or meeting link, speakers, agenda and seat limit." },
-  { title: "Publish and share", text: "Your event goes live on MindConnect with its own page to share anywhere." },
+  { title: "Publish and share", text: "Your event goes live on Psytrexa with its own page to share anywhere." },
   { title: "Manage registrations", text: "See who's coming in real time and download the attendee list as a spreadsheet." },
 ];
 
@@ -35,7 +35,7 @@ export default async function HostPage() {
             Bring your mental health event to the people who need it.
           </h1>
           <p className="mt-5 text-lg text-muted">
-            Workshops, webinars, conferences and conclaves — list them on MindConnect for free and handle registrations
+            Workshops, webinars, conferences and conclaves — list them on Psytrexa for free and handle registrations
             in one place.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">

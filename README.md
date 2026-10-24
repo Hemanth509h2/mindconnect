@@ -1,4 +1,4 @@
-# MindConnect
+# Psytrexa
 
 An events platform for mental health — like Unstop, but for workshops,
 webinars, conferences and conclaves. Organizers list events; participants
@@ -19,7 +19,7 @@ Two deployables that talk **only over HTTP**:
     └── prisma/              # schema + demo seed
 ```
 
-Ports are 3200/4200 so MindConnect can run next to the STAAD platform
+Ports are 3200/4200 so Psytrexa can run next to the STAAD platform
 (3000/4000/4100).
 
 ## Run locally
@@ -55,7 +55,7 @@ scripts and the frontend only needs `API_URL` on its server.
 ## Database
 
 One Neon Postgres database (`ep-falling-rain…`, US East — Ohio), used both
-when you run MindConnect locally and by the live site. Anything you do
+when you run Psytrexa locally and by the live site. Anything you do
 locally — sign-ups, test events, registrations — is real data.
 
 ## Features
@@ -109,7 +109,7 @@ folder's `vercel.json` sets the build and runs functions in Cleveland
    `backend/.env`), `AUTH_SECRET` (a new one: `openssl rand -base64 32`),
    `ALLOWED_ORIGINS` (the frontend's URL).
 2. **Frontend project** env var: `API_URL` — the backend's production
-   domain, e.g. `https://mindconnect-backend.vercel.app`. Use the production
+   domain, e.g. `https://psytrexa-backend.vercel.app`. Use the production
    domain rather than a deployment URL: Vercel's Deployment Protection can
    put deployment and preview URLs behind a Vercel login.
 

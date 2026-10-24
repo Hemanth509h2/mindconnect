@@ -1,7 +1,7 @@
 // Branding and region settings for the whole site.
 
 export const site = {
-  name: "MindConnect",
+  name: "Psytrexa",
   tagline: "Mental health workshops, webinars and conferences — all in one place.",
   description:
     "Discover and join mental health workshops, webinars, conferences and conclaves, or list your own event for free.",

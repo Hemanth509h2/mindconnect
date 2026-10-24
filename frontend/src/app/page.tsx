@@ -114,7 +114,7 @@ export default async function HomePage() {
           <div className="relative max-w-2xl">
             <h2 className="text-3xl font-semibold sm:text-4xl">Running a workshop, webinar or conference?</h2>
             <p className="mt-4 text-white/75">
-              List it on MindConnect for free. Publish in minutes, collect registrations, and download your attendee list
+              List it on Psytrexa for free. Publish in minutes, collect registrations, and download your attendee list
               whenever you need it.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">

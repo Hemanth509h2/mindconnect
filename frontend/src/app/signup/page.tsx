@@ -10,7 +10,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
   const next = safeNext(sp.next, "");
   if (await getCurrentUser()) redirect(next || "/dashboard");
   return (
-    <AuthShell title="Join MindConnect" subtitle="Free for participants and organizers.">
+    <AuthShell title="Join Psytrexa" subtitle="Free for participants and organizers.">
       <SignupForm next={next || undefined} defaultRole={sp.role === "organizer" ? "ORGANIZER" : "PARTICIPANT"} />
     </AuthShell>
   );

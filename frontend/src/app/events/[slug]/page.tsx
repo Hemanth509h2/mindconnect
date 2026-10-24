@@ -25,7 +25,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
   const [event, user] = await Promise.all([getEvent(slug), getCurrentUser()]);
   if (!event) notFound();
-  const { isOwner, myRegistration: registration, speakers, agenda, topics } = event;
+  const { isOwner, myRegistration: registration, speakers, agenda, gallery, topics } = event;
   const isRegistered = registration?.status === "REGISTERED";
 
   const now = new Date();
@@ -155,6 +155,23 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
                   </li>
                 ))}
               </ol>
+            </section>
+          )}
+
+          {gallery.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-2xl font-semibold">Gallery</h2>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                {gallery.map((img, i) => (
+                  <figure key={i} className="card overflow-hidden">
+                    <a href={img.url} target="_blank" rel="noopener noreferrer">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.url} alt={img.caption ?? ""} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                    </a>
+                    {img.caption && <figcaption className="px-4 py-3 text-sm text-muted">{img.caption}</figcaption>}
+                  </figure>
+                ))}
+              </div>
             </section>
           )}
 

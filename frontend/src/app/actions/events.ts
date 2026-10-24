@@ -43,6 +43,7 @@ function eventBody(formData: FormData) {
     bannerUrl: str(formData, "bannerUrl"),
     speakers: list("speakers"),
     agenda: list("agenda"),
+    gallery: list("gallery"),
     status: intent === "publish" ? "PUBLISHED" : intent === "draft" ? "DRAFT" : undefined,
   };
 }

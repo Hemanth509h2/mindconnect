@@ -34,6 +34,7 @@ export type EventSummary = {
 
 export type Speaker = { name: string; role?: string; bio?: string; photoUrl?: string };
 export type AgendaItem = { time?: string; title: string };
+export type GalleryImage = { url: string; caption?: string };
 
 type EventContent = {
   description: string;
@@ -42,6 +43,7 @@ type EventContent = {
   topics: string[];
   speakers: Speaker[];
   agenda: AgendaItem[];
+  gallery: GalleryImage[];
 };
 
 export type EventDetail = Omit<EventSummary, "organizer"> &

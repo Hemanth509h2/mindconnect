@@ -20,15 +20,17 @@ export class ApiError extends Error {
 
 type Options = { method?: string; body?: unknown };
 
+/** `body` is sent as JSON, or as multipart when it's FormData (file uploads). */
 async function request(path: string, { method = "GET", body }: Options = {}) {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  const isJson = body !== undefined && !(body instanceof FormData);
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers: {
-      ...(body !== undefined && { "Content-Type": "application/json" }),
+      ...(isJson && { "Content-Type": "application/json" }),
       ...(token && { Authorization: `Bearer ${token}` }),
     },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: isJson ? JSON.stringify(body) : (body as FormData | undefined),
     cache: "no-store",
   });
   if (!res.ok) {

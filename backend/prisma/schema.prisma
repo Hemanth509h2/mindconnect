@@ -24,6 +24,7 @@ model User {
 
   events        Event[]
   registrations Registration[]
+  images        Image[]
 }
 
 model Event {
@@ -54,6 +55,8 @@ model Event {
   speakers             String   @default("[]")
   // JSON: [{ time, title }]
   agenda               String   @default("[]")
+  // JSON: [{ url, caption }]
+  gallery              String   @default("[]")
   // DRAFT | PUBLISHED | CANCELLED
   status               String   @default("DRAFT")
   createdAt            DateTime @default(now())
@@ -86,4 +89,20 @@ model Registration {
 
   @@unique([eventId, userId])
   @@index([userId])
+}
+
+// Uploaded images, served at /api/images/[id]. Events refer to them by URL
+// (bannerUrl, speaker photoUrl, gallery), so nothing links back here.
+model Image {
+  id          String   @id @default(cuid())
+  data        Bytes
+  // image/jpeg | image/png | image/webp | image/gif
+  contentType String
+  size        Int
+  createdAt   DateTime @default(now())
+
+  uploaderId String
+  uploader   User   @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+
+  @@index([uploaderId])
 }

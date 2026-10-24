@@ -4,8 +4,9 @@ import { useState } from "react";
 import { EVENT_MODES, EVENT_TYPES, TOPICS } from "@/lib/constants";
 import { toDateTimeLocal } from "@/lib/format";
 import type { FormState } from "@/lib/form";
-import type { AgendaItem, EditableEvent, Speaker } from "@/lib/types";
+import type { AgendaItem, EditableEvent, GalleryImage, Speaker } from "@/lib/types";
 import { FormMessage } from "./FormMessage";
+import { GalleryField, ImageField } from "./ImageUpload";
 import { SubmitButton } from "./SubmitButton";
 import { useActionForm } from "./useActionForm";
 
@@ -27,6 +28,8 @@ export function EventForm({ action, event }: Props) {
   const [mode, setMode] = useState(event?.mode ?? "ONLINE");
   const [speakers, setSpeakers] = useState<Speaker[]>(event?.speakers ?? []);
   const [agenda, setAgenda] = useState<AgendaItem[]>(event?.agenda ?? []);
+  const [bannerUrl, setBannerUrl] = useState(event?.bannerUrl ?? "");
+  const [gallery, setGallery] = useState<GalleryImage[]>(event?.gallery ?? []);
 
   const updateSpeaker = (i: number, field: keyof Speaker, value: string) =>
     setSpeakers((list) => list.map((s, j) => (j === i ? { ...s, [field]: value } : s)));
@@ -39,6 +42,8 @@ export function EventForm({ action, event }: Props) {
     <form onSubmit={onSubmit} className="space-y-8">
       <input type="hidden" name="speakers" value={JSON.stringify(filled(speakers))} />
       <input type="hidden" name="agenda" value={JSON.stringify(filled(agenda))} />
+      <input type="hidden" name="bannerUrl" value={bannerUrl} />
+      <input type="hidden" name="gallery" value={JSON.stringify(gallery)} />
 
       <Card title="The basics">
         <div>
@@ -128,9 +133,18 @@ export function EventForm({ action, event }: Props) {
             <p className="hint">0 for free. Fees are collected by you directly for now.</p>
           </div>
         </div>
+      </Card>
+
+      <Card title="Images" subtitle="Optional — a banner for the top of the event page, and a gallery further down.">
         <div>
-          <label className="label" htmlFor="bannerUrl">Banner image link <span className="text-muted">(optional)</span></label>
-          <input id="bannerUrl" name="bannerUrl" type="url" defaultValue={event?.bannerUrl ?? ""} className="input" placeholder="https://… (wide image, about 1600×600)" />
+          <p className="label">Banner</p>
+          <ImageField value={bannerUrl} onChange={setBannerUrl} linkLabel="Banner image link" />
+          <p className="hint">A wide image works best, about 1600×600.</p>
+        </div>
+        <div>
+          <p className="label">Gallery</p>
+          <GalleryField value={gallery} onChange={setGallery} />
+          <p className="hint">Photos of the venue, past editions or your team. JPEG, PNG, WebP or GIF.</p>
         </div>
       </Card>
 
@@ -139,7 +153,9 @@ export function EventForm({ action, event }: Props) {
           <div key={i} className="grid gap-3 rounded-xl border border-line bg-ivory p-4 sm:grid-cols-2">
             <input value={s.name} onChange={(e) => updateSpeaker(i, "name", e.target.value)} className="input" placeholder="Name" aria-label="Speaker name" />
             <input value={s.role ?? ""} onChange={(e) => updateSpeaker(i, "role", e.target.value)} className="input" placeholder="Role, e.g. Clinical Psychologist" aria-label="Speaker role" />
-            <input value={s.photoUrl ?? ""} onChange={(e) => updateSpeaker(i, "photoUrl", e.target.value)} className="input sm:col-span-2" placeholder="Photo link (optional)" aria-label="Speaker photo link" />
+            <div className="sm:col-span-2">
+              <ImageField value={s.photoUrl ?? ""} onChange={(url) => updateSpeaker(i, "photoUrl", url)} shape="round" linkLabel="Speaker photo link" />
+            </div>
             <textarea value={s.bio ?? ""} onChange={(e) => updateSpeaker(i, "bio", e.target.value)} rows={2} className="input sm:col-span-2" placeholder="Short bio (optional)" aria-label="Speaker bio" />
             <button type="button" onClick={() => setSpeakers((list) => list.filter((_, j) => j !== i))} className="justify-self-start text-sm text-rose hover:underline">
               Remove speaker

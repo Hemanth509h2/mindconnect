@@ -67,8 +67,9 @@ once registered, cancel, and track everything under *My registrations*.
 
 **Organizers** — sign up as an organizer (or upgrade from a participant
 account), create events as drafts or publish straight away, edit, cancel or
-restore, delete unused drafts, see registrants and download them as CSV, and
-a public organizer profile page.
+restore, delete unused drafts, see registrants and download them as CSV, upload
+a banner, speaker photos and a photo gallery (or paste image links), and a
+public organizer profile page.
 
 **Platform** — Tele-MANAS helpline on every page, all times in IST, fees are
 shown but collected by the organizer (no online payments yet).
@@ -94,6 +95,8 @@ All responses are JSON; errors are `{ "error": "message" }`.
 | GET / PUT / DELETE | `/api/organizer/events/:id` | organizer | Load, update, delete (drafts without registrations only) |
 | PATCH | `/api/organizer/events/:id/status` | organizer | `{ status: DRAFT \| PUBLISHED \| CANCELLED }` |
 | GET | `/api/organizer/events/:id/registrations` | organizer | Registrants; `?format=csv` downloads them |
+| POST | `/api/uploads` | organizer | Multipart `file` (JPEG/PNG/WebP/GIF, ≤ 3 MB) → `{ url: "/images/:id" }` |
+| GET | `/api/images/:id` | — | An uploaded image (the frontend serves it at `/images/:id`) |
 
 ## Deploy to Vercel
 
@@ -115,5 +118,5 @@ Deploy the backend first so its URL exists when you set `API_URL`.
 ## Not built yet
 
 Online payments (Cashfree), email confirmations and reminders, password reset
-and email verification, admin moderation of listings, image uploads (banners
-and speaker photos are links for now), and rate limiting on login.
+and email verification, admin moderation of listings, cleanup of uploaded images no event uses,
+and rate limiting on login.

@@ -30,12 +30,13 @@ export function toSummary({ _count, ...event }: EventSummaryRow) {
 
 /** A full event as the client sees it. The meeting link is only included when `withMeetingLink`. */
 export function toDetail(event: Event, withMeetingLink: boolean) {
-  const { speakers, agenda, topics, meetingLink, ...rest } = event;
+  const { speakers, agenda, gallery, topics, meetingLink, ...rest } = event;
   return {
     ...rest,
     topics: topics.split(",").filter(Boolean),
     speakers: parseList(speakers),
     agenda: parseList(agenda),
+    gallery: parseList(gallery),
     meetingLink: withMeetingLink ? meetingLink : null,
   };
 }
@@ -52,17 +53,25 @@ function parseList(value: string): unknown[] {
 // http(s) only: these end up in href/src attributes.
 const url = z.url({ protocol: /^https?$/, message: "Links must be full URLs starting with https://" });
 const optionalUrl = z.union([z.literal(""), url]).nullish();
+// An image is either a link or one of our uploads ("/images/<id>", see api/uploads).
+const image = z.union([url, z.string().regex(/^\/images\/[a-z0-9]+$/, "Links must be full URLs starting with https://")]);
+const optionalImage = z.union([z.literal(""), image]).nullish();
 
 const speakerSchema = z.object({
   name: z.string().trim().min(1, "Every speaker needs a name").max(100),
   role: z.string().trim().max(120).optional(),
   bio: z.string().trim().max(500).optional(),
-  photoUrl: optionalUrl,
+  photoUrl: optionalImage,
 });
 
 const agendaSchema = z.object({
   time: z.string().trim().max(40).optional(),
   title: z.string().trim().min(1, "Every agenda item needs a title").max(200),
+});
+
+const gallerySchema = z.object({
+  url: image,
+  caption: z.string().trim().max(200).optional(),
 });
 
 const date = (what: string) => z.coerce.date({ message: `Set a valid ${what}` });
@@ -82,9 +91,10 @@ export const eventInputSchema = z.object({
   meetingLink: optionalUrl,
   capacity: z.number().int().min(1, "Seats must be at least 1, or leave it empty for unlimited").nullish(),
   price: z.number().int().min(0, "Fee can't be negative").max(1_000_000).default(0),
-  bannerUrl: optionalUrl,
+  bannerUrl: optionalImage,
   speakers: z.array(speakerSchema).max(50).default([]),
   agenda: z.array(agendaSchema).max(100).default([]),
+  gallery: z.array(gallerySchema).max(30, "A gallery can have up to 30 images").default([]),
   status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
 });
 
@@ -120,6 +130,7 @@ export function parseEventInput(body: unknown) {
       bannerUrl: v.bannerUrl || null,
       speakers: JSON.stringify(v.speakers.map(compact)),
       agenda: JSON.stringify(v.agenda.map(compact)),
+      gallery: JSON.stringify(v.gallery.map(compact)),
     },
   } as const;
 }

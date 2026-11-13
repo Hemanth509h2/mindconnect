@@ -1,3 +1,4 @@
+
 name: Backend CI
 
 on:
@@ -5,14 +6,18 @@ on:
     branches: [main, master]
     paths:
       - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
   pull_request:
     branches: [main, master]
     paths:
       - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: backend
@@ -25,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies

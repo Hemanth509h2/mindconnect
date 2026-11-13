@@ -29,5 +29,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
+          file: ./frontend/Dockerfile
           push: false
           tags: mindconnect-frontend:latest

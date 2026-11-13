@@ -34,6 +34,9 @@ RUN npm ci
 
 # Copy the rest of the source and compile.
 COPY . .
+# Ensure public/ exists (Next.js static assets). It may be empty, but the
+# runner stage needs the directory to exist for COPY --from=build.
+RUN mkdir -p /app/public
 RUN npm run build
 
 

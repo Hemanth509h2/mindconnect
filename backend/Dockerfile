@@ -38,7 +38,7 @@ RUN apt-get update \
 
 # Copy dependency files first for better layer caching.
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps --no-audit --no-fund
 
 # Copy the Prisma schema and generate the client.
 COPY prisma ./prisma

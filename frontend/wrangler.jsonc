@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "psytrexa-frontend",
+  "compatibility_date": "2026-11-19",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "global_fetch_strictly_random"
+  ],
+  "main": ".open-next/worker.js",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "psytrexa-frontend"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  }
+}

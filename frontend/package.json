@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3200",
-    "build": "opennextjs-cloudflare build",
+    "build": "next build",
     "start": "next start -p 3200",
+    "cf:build": "opennextjs-cloudflare build",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
   },
@@ -18,8 +19,8 @@
     "@opennextjs/cloudflare": "^1.20.18",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.0.0",
-    "@types/react": "^19.1.0",
-    "@types/react-dom": "^19.1.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
     "wrangler": "^4.166.0"

@@ -5,6 +5,3 @@ out
 next-env.d.ts
 .env
 .vercel
-.open-next
-.wrangler
-.dev.vars
